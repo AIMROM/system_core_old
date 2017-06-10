@@ -899,6 +899,18 @@ static int do_installkey(const std::vector<std::string>& args) {
     return do_exec(exec_args);
 }
 
+static int do_install_keyring(const std::vector<std::string>& args) {
+    if (e4crypt_install_keyring()) {
+        PLOG(ERROR) << "Failed to install keyring";
+        return -1;
+    }
+
+    property_set("ro.crypto.state", "encrypted");
+    property_set("ro.crypto.type", "file");
+
+    return 0;
+}
+
 static int do_init_user0(const std::vector<std::string>& args) {
     std::vector<std::string> exec_args = {"exec", "/system/bin/vdc", "--wait", "cryptfs",
                                           "init_user0"};
